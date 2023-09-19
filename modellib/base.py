@@ -1,14 +1,12 @@
-from abc import ABCMeta, abstractmethod
-
-import numpy as np
+from abc import ABC, abstractmethod
+from typing import Optional, Any
 import numpy.typing as npt
-from typing import Optional
-from multiprocessing import cpu_count
-import xgboost as _xgb
-from tensorflow.keras import layers, models
 
 
-class Regressor(metaclass=ABCMeta):
+class Model(ABC):
+    """
+    Abstract class for ML models.
+    """
 
     def __init__(self):
         self.x: Optional[npt.NDArray[float]] = None
@@ -17,7 +15,7 @@ class Regressor(metaclass=ABCMeta):
         self.dim_in: Optional[int] = None
         self.dim_out: Optional[int] = None
         self.model: Optional[object] = None
-        self.model_params: dict = {}
+        self.model_params: dict[str: Any] = {}
 
     def fit(self, x: npt.NDArray[float], y: npt.NDArray[float]):
         """
@@ -51,7 +49,7 @@ class Regressor(metaclass=ABCMeta):
         """
         pass
 
-    def predict(self, x_: npt.NDArray[float]) -> npt.NDArray[float]:
+    def predict(self, x_: npt.NDArray[float]) -> Any:
         """
         Make a prediction of $\overline{f}(\mathbf{x}')$ where $\overline{
         f(\cdot)}$ models the true process $f(\cdot).$
@@ -83,7 +81,7 @@ class Regressor(metaclass=ABCMeta):
         return out
 
     @abstractmethod
-    def _predict(self, x_: npt.NDArray[float]):
+    def _predict(self, x_: npt.NDArray[float]) -> Any:
         """
         Make a prediction of $\overline{f}(\mathbf{x}')$ where $\overline{
         f(\cdot)}$ models the true process $f(\cdot).$
@@ -94,70 +92,17 @@ class Regressor(metaclass=ABCMeta):
         pass
 
 
-class RandomForest(Regressor):
+class Regression(Model, ABC):
     """
-    Wrapper for sklearn's implementation of a RandomForestRegressor
+    Base class for regression models.
+    All regressors should inherit from this.
     """
-    from sklearn.ensemble import RandomForestRegressor as \
-        _RandomForestRegressor
 
-    def __init__(self, **kwargs):
-        super(RandomForest, self).__init__()
-        self.model_parameters = kwargs.copy()
-        self.model = self._RandomForestRegressor(**kwargs)
+    @abstractmethod
+    def _predict(self, x_: npt.NDArray[float]) -> float:
+        pass
 
-    def _fit(self, x: npt.NDArray[float], y: npt.NDArray[float]):
-        if self.dim_out > 1:
-            self.model.fit(x, y)
-        else:
-            self.model.fit(x, y.reshape(-1))
-
-    def _predict(self, x_: npt.NDArray[float]) -> npt.NDArray[float]:
-        return self.model.predict(x_)
+    def predict(self, x_: npt.NDArray[float]) -> float:
+        return super(Regression, self).predict(x_)
 
 
-class LinearRegression(Regressor):
-    """
-    Wrapper for sklearn's implementation of a LinearRegression
-    """
-    from sklearn.linear_model import LinearRegression as _LinearRegression
-    
-    def __init__(self, **kwargs):
-        super(LinearRegression, self).__init__()
-        self.model_parameters = kwargs.copy()
-        self.model = self._LinearRegression(**kwargs)
-
-    def _fit(self, x: npt.NDArray[float], y: npt.NDArray[float]):
-        if self.dim_out > 1:
-            self.model.fit(x, y)
-        else:
-            self.model.fit(x, y.reshape(-1))
-
-    def _predict(self, x_: npt.NDArray[float]) -> npt.NDArray[float]:
-        return self.model.predict(x_)
-
-
-class XGBoost(Regressor):
-    """
-    Wrapper for xgboost regressor
-    """
-    
-    def __init__(self, **kwargs):
-        super(XGBoost, self).__init__()
-        default_kwargs = {"n_jobs": cpu_count(),
-                          "n_estimators": 100}
-        default_kwargs.update(kwargs)
-        self.model = _xgb.XGBRegressor(**default_kwargs)
-        self.model_parameters = default_kwargs
-
-    def _fit(self, x: npt.NDArray[float], y: npt.NDArray[float]):
-        self.model.fit(x, y)
-
-    def _predict(self, x_: npt.NDArray[float]):
-        return self.model.predict(x_=x_)
-
-class Cnn(Regressor):
-
-    def __int__(self):
-        self.model = models.Sequential()
-        model.add(layers.C)
