@@ -40,3 +40,23 @@ class LogisticRegression(Classification):
 
     def _predict(self, x_: npt.NDArray[float]) -> npt.NDArray[int]:
         return self.model.predict(x_)
+
+class RandomForest(Classification):
+
+    from sklearn.ensemble import RandomForestClassifier as _RFClassifier
+
+    def __init__(self, **kwargs):
+        super(RandomForest, self).__init__()
+        self.model_parameters = kwargs.copy()
+        self.model = self._RFClassifier(**kwargs)
+
+    def _fit(self, x: npt.NDArray[float], y: npt.NDArray[int]):
+        if self.dim_out > 1:
+            self.model.fit(x, y)
+        else:
+            self.model.fit(x, y.reshape(-1))
+
+    def _predict(self, x_: npt.NDArray[float]) -> npt.NDArray[int]:
+        return self.model.predict(x_)
+
+
