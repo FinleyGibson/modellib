@@ -3,7 +3,7 @@ from parameterized import parameterized
 
 import numpy as np
 
-from modellib.classification import Classification
+from modellib.classification import Classification, LogisticRegression
 
 CLASSIFIERS = Classification.__subclasses__()
 
@@ -47,6 +47,23 @@ class TestModels(unittest.TestCase):
         y_ = model.predict(self.x)
         self.assertEqual(self.y.shape, y_.shape)
         self.assertEqual(y_.dtype, int)
+
+
+class TestLogisticRegression(unittest.TestCase):
+    """
+    Tests specific to logistic regression classifier
+    """
+    @classmethod
+    def setUpClass(cls) -> None:
+        x = np.random.randn(10, 3)
+        y = np.random.randint(0, 2, (10, 1))
+        cls.model = LogisticRegression()
+        cls.model.fit(x, y)
+
+    def test_get_coefficients(self):
+        coeffs = self.model.get_coefficients()
+        self.assertIsInstance(coeffs, np.ndarray)
+        self.assertEqual(coeffs.shape, (1, 3))
 
 
 if __name__ == '__main__':

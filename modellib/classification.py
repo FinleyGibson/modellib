@@ -41,6 +41,9 @@ class LogisticRegression(Classification):
     def _predict(self, x_: npt.NDArray[float]) -> npt.NDArray[int]:
         return self.model.predict(x_)
 
+    def get_coefficients(self) -> npt.NDArray[float]:
+        return self.model.coef_
+
 
 class RandomForest(Classification):
 
