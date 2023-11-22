@@ -1,6 +1,9 @@
 from modellib.base import Model
 from abc import ABC, abstractmethod
 import numpy.typing as npt
+from multiprocessing import cpu_count
+import xgboost as _xgb
+
 
 
 class Classification(Model, ABC):
@@ -64,3 +67,19 @@ class RandomForest(Classification):
         return self.model.predict(x_)
 
 
+class XGBoost(Classification):
+
+    def __init__(self, **kwargs):
+        super(XGBoost, self).__init__()
+        default_kwargs = {"objective": 'multi:softprob',
+                          "num_class": 2,
+                          "n_estimators": 100}
+        default_kwargs.update(kwargs)
+        self.model = _xgb.XGBClassifier(**default_kwargs)
+        self.model_parameters = default_kwargs
+
+    def _fit(self, x: npt.NDArray[float], y: npt.NDArray[float]):
+        self.model.fit(x, y)
+
+    def _predict(self, x_: npt.NDArray[float]):
+        return self.model.predict(x_)
