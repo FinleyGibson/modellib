@@ -1,9 +1,7 @@
 from modellib.base import Model
 from abc import ABC, abstractmethod
 import numpy.typing as npt
-from multiprocessing import cpu_count
 import xgboost as _xgb
-
 
 
 class Classification(Model, ABC):
@@ -71,8 +69,7 @@ class XGBoost(Classification):
 
     def __init__(self, **kwargs):
         super(XGBoost, self).__init__()
-        default_kwargs = {"objective": 'multi:softprob',
-                          "num_class": 2,
+        default_kwargs = {"objective": 'binary:logistic',
                           "n_estimators": 100}
         default_kwargs.update(kwargs)
         self.model = _xgb.XGBClassifier(**default_kwargs)
