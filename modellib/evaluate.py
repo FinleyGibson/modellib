@@ -7,7 +7,8 @@ from tqdm import tqdm
 
 def leave_one_out_cv(x: List[npt.NDArray[Any]],
                      y: List[npt.NDArray[Any]],
-                     model: Type[Model]) -> Tuple[List[npt.NDArray[Any]]]:
+                     model: Type[Model]) -> Tuple[List[npt.NDArray[Any]],
+                                                  List[npt.NDArray[Any]]]:
     """
     Perform leave-one-out cross-validation using the specified model.
 
