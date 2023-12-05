@@ -1,7 +1,8 @@
 import unittest
-from modellib.evaluate import leave_one_out_cv
+from modellib.evaluate import leave_one_out_cv, random_undersample
 from modellib.regression import LinearRegression
 import numpy as np
+import numpy.testing as nptest
 
 
 class TestLeaveOneOutCV(unittest.TestCase):
@@ -20,6 +21,23 @@ class TestLeaveOneOutCV(unittest.TestCase):
         self.assertEqual(10, len(Y))
         self.assertEqual(2, Y_[0].shape[1])
         self.assertEqual(2, Y[0].shape[1])
+
+
+class TestRandomUndersample(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.xs = [np.ones((i*5, 10))*i for i in range(1, 5)]
+        cls.ys = [np.ones((i*5, 1))*i for i in range(1, 5)]
+
+    def test_random_undersample(self):
+        xs_out, ys_out = random_undersample(xs=self.xs, ys=self.ys)
+
+        self.assertEqual((20, 10), xs_out.shape)
+        self.assertEqual((20, 1), ys_out.shape)
+
+        nptest.assert_array_equal(np.arange(1, 5), np.unique(ys_out))
+
 
 
 if __name__ == '__main__':

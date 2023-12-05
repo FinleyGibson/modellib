@@ -68,5 +68,24 @@ def leave_one_out_cv(x: List[npt.NDArray[Any]],
     return Y, Y_
 
 
+def random_undersample(xs: List[npt.NDArray[Any]],
+                       ys: List[npt.NDArray[Any]]) -> \
+        Tuple[npt.NDArray[Any], npt.NDArray[Any]]:
 
+    assert len(xs) == len(ys)
+
+    n_samples = min([xi.shape[0] for xi in xs])
+
+    xs_out = []
+    ys_out = []
+    for xi, yi in zip(xs, ys):
+        inds = np.random.permutation(n_samples)
+        xs_out.append(xi[inds])
+        ys_out.append(yi[inds])
+
+    xs_out = np.vstack(xs_out)
+    ys_out = np.vstack(ys_out)
+    inds = np.random.permutation(xs_out.shape[0])
+
+    return xs_out[inds], ys_out[inds]
 
