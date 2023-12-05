@@ -2,8 +2,9 @@ import unittest
 from parameterized import parameterized
 
 import numpy as np
+import numpy.testing as nptest
 
-from modellib.classification import Classification, LogisticRegression
+from modellib.classification import Classification, LogisticRegression, XGBoost
 
 CLASSIFIERS = Classification.__subclasses__()
 
@@ -48,6 +49,29 @@ class TestModels(unittest.TestCase):
         self.assertEqual(self.y.shape, y_.shape)
         self.assertEqual(y_.dtype, int)
 
+    @parameterized.expand(CLASSIFIERS)
+    def test_predict_proba(self, Model):
+        model = Model()
+        model.fit(self.x, self.y)
+
+        out = model.predict_proba(self.x, 1.0)
+        nptest.assert_array_equal(out, np.ones_like(out))
+
+        out = model.predict_proba(self.x, 0.0)
+        nptest.assert_array_equal(out, np.zeros_like(out))
+
+
+class TestXGBoost(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        x = np.random.randn(10, 3)
+        y = np.random.randint(0, 2, (10, 1))
+        cls.x = x
+        cls.y = y
+        cls.model = XGBoost()
+        cls.model.fit(x, y)
+
 
 class TestLogisticRegression(unittest.TestCase):
     """
@@ -57,6 +81,8 @@ class TestLogisticRegression(unittest.TestCase):
     def setUpClass(cls) -> None:
         x = np.random.randn(10, 3)
         y = np.random.randint(0, 2, (10, 1))
+        cls.x = x
+        cls.y = y
         cls.model = LogisticRegression()
         cls.model.fit(x, y)
 
@@ -65,6 +91,14 @@ class TestLogisticRegression(unittest.TestCase):
         self.assertIsInstance(coeffs, np.ndarray)
         self.assertEqual(coeffs.shape, (1, 3))
 
+    def test_predict_proba(self):
+        out = self.model.predict_proba(self.x, 0.5)
+
+        out = self.model.predict_proba(self.x, 1.0)
+        nptest.assert_array_equal(out, np.ones_like(out))
+
+        out = self.model.predict_proba(self.x, 0.0)
+        nptest.assert_array_equal(out, np.zeros_like(out))
 
 if __name__ == '__main__':
     # to run all tests:

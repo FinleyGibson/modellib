@@ -13,7 +13,6 @@ setup(
         'scikit-learn',
         'parameterized',
         'xgboost',
-        'tensorflow',
     ],
     extras_require={
         'interactive': ['matplotlib', 'jupyter'],

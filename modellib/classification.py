@@ -2,6 +2,7 @@ from modellib.base import Model
 from abc import ABC, abstractmethod
 import numpy.typing as npt
 import xgboost as _xgb
+from typing import Optional
 
 
 class Classification(Model, ABC):
@@ -42,6 +43,16 @@ class LogisticRegression(Classification):
     def _predict(self, x_: npt.NDArray[float]) -> npt.NDArray[int]:
         return self.model.predict(x_)
 
+    def predict_proba(self, x_: npt.NDArray[float], thresh: Optional[float]) \
+            -> \
+            npt.NDArray[int]:
+
+        probs = self.model.predict_proba(x_)
+        if thresh is not None:
+            return (probs[:, 0]<thresh).astype(int)
+        else:
+            return probs
+
     def get_coefficients(self) -> npt.NDArray[float]:
         return self.model.coef_
 
@@ -64,6 +75,15 @@ class RandomForest(Classification):
     def _predict(self, x_: npt.NDArray[float]) -> npt.NDArray[int]:
         return self.model.predict(x_)
 
+    def predict_proba(self, x_: npt.NDArray[float], thresh: Optional[float]) \
+            -> npt.NDArray[int]:
+
+        probs = self.model.predict_proba(x_)
+        if thresh is not None:
+            return (probs[:, 0]<thresh).astype(int)
+        else:
+            return probs
+
 
 class XGBoost(Classification):
 
@@ -80,3 +100,12 @@ class XGBoost(Classification):
 
     def _predict(self, x_: npt.NDArray[float]):
         return self.model.predict(x_)
+
+    def predict_proba(self, x_: npt.NDArray[float], thresh: Optional[float]) \
+            -> npt.NDArray[int]:
+
+        probs = self.model.predict_proba(x_)
+        if thresh is not None:
+            return (probs[:, 0]<thresh).astype(int)
+        else:
+            return probs
