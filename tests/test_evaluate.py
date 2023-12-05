@@ -14,10 +14,12 @@ class TestLeaveOneOutCV(unittest.TestCase):
         pass
 
     def test_leave_one_out_cv(self):
-        Y_ = leave_one_out_cv(self.x, self.y, self.model)
+        Y, Y_ = leave_one_out_cv(self.x, self.y, self.model)
         self.assertIsInstance(Y_, list)
         self.assertEqual(10, len(Y_))
+        self.assertEqual(10, len(Y))
         self.assertEqual(2, Y_[0].shape[1])
+        self.assertEqual(2, Y[0].shape[1])
 
 
 if __name__ == '__main__':
