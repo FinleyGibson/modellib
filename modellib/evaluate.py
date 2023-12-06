@@ -71,7 +71,40 @@ def leave_one_out_cv(x: List[npt.NDArray[Any]],
 def random_undersample(xs: List[npt.NDArray[Any]],
                        ys: List[npt.NDArray[Any]]) -> \
         Tuple[npt.NDArray[Any], npt.NDArray[Any]]:
+    """
+    Perform random undersampling on the input data to balance class
+    distribution.
 
+    Args:
+        xs (Iterable[NDArray]): Iterable of input features for each sample.
+        ys (Iterable[NDArray]): Iterable of corresponding target values for
+        each sample.
+
+    Returns:
+        Tuple[NDArray, NDArray]: A tuple containing two Numpy arrays.
+            - The first array (xs_out) contains randomly undersampled input
+            features.
+            - The second array (ys_out) contains corresponding randomly
+            undersampled target values.
+
+    Raises:
+        AssertionError: If the lengths of input feature and target value
+        iterables (xs and ys) are not equal.
+
+    Note:
+        This function performs random undersampling to balance the class
+        distribution in the input data. It takes iterable input features (xs)
+        and target values (ys) and returns randomly undersampled input features
+        and target values. The undersampling is done independently for each
+        sample.
+
+    Example:
+        >>> x_samples = [...]  # Iterable of input features for each sample
+        >>> y_samples = [...]  # Iterable of corresponding target values for
+                               # each sample
+        >>> xs_undersampled, ys_undersampled = random_undersample(x_samples,
+                                                                  y_samples)
+    """
     assert len(xs) == len(ys)
 
     n_samples = min([xi.shape[0] for xi in xs])

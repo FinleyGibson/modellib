@@ -12,7 +12,6 @@ class TestLeaveOneOutCV(unittest.TestCase):
         cls.model = LinearRegression()
         cls.x = [i.reshape(-1, 2) for i in np.random.randn(10, 2)]
         cls.y = [i.reshape(-1, 2) for i in np.arange(20).reshape(-1, 2)]
-        pass
 
     def test_leave_one_out_cv(self):
         Y, Y_ = leave_one_out_cv(self.x, self.y, self.model)
@@ -37,7 +36,6 @@ class TestRandomUndersample(unittest.TestCase):
         self.assertEqual((20, 1), ys_out.shape)
 
         nptest.assert_array_equal(np.arange(1, 5), np.unique(ys_out))
-
 
 
 if __name__ == '__main__':
